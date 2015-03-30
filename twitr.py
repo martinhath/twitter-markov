@@ -6,11 +6,9 @@ from re import compile
 #local file, containing keys
 from keys import *
 
-per_search_count    = "200"
-num_searches        = 16
+per_search_count    = "50"
+num_searches        = 1#6
 user                = 'SwiftOnSecurity'
-
-line_split          = "~~~"
 
 api = TwitterAPI(
         CONSUMER_KEY,
@@ -29,7 +27,7 @@ def getTweets():
     for tw in r.get_iterator():
         requests.append(tw['text'])
         last_id = tw['id']
-    for i in range(num_searches):
+    for i in range(num_searches - 1):
         r = api.request("statuses/user_timeline", {
             'screen_name': user,
             'count':per_search_count,
@@ -46,17 +44,29 @@ filtr_re = compile('^\.?(@|RT)')
 def filtr(s):
     return filtr_re.match(s) == None
 
+def sanitize(s):
+    #TODO: comas, " 
+    s = s.strip()
+    if not s.endswith('.'):
+        s = s + '. '
+    s = s.replace('\n', '. ')
+    return s
+
+
 def save_to_file(fname, tweets):
-    f = open(fname, 'a')
+    f = open(fname, 'w')
     for tweet in tweets:
-        f.write(tweet)
-        f.write('\n' + line_split + '\n')
+        for t in tweet.split('. '):
+            if not t: continue
+            if t.endswith('.'):
+                t = t[:-1]
+            f.write(t + '\n')
     f.close()
 
 if __name__ == "__main__":
     t = getTweets()
     print('len before filter: ', len(t))
-    tweets = list(filter(filtr, t))
+    tweets = list(map(sanitize, filter(filtr, t)))
     print('len after filter: ', len(tweets))
     save_to_file('tmp', tweets)
 
