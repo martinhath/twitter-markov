@@ -47,17 +47,20 @@ def build_markov(lines):
         helper(word, d)
     return dc
 
+BEGIN_TOKEN = '(BEGIN)'
+END_TOKEN = '(END)'
+
 def prepare(lines):
-    return list(map(lambda w: 'BEGIN ' + w + ' END', lines))
+    return list(map(lambda w: BEGIN_TOKEN + ' ' + w + ' ' + END_TOKEN, lines))
 
 if __name__ == '__main__':
     tweets = read_file('tmp')
     tweets = prepare(tweets)
     d = build_markov(tweets)
     for i in range(20):
-        w = d['BEGIN'](random())
+        w = d[BEGIN_TOKEN](random())
         s = ''
-        while w != 'END':
+        while w != END_TOKEN:
             s += w + ' '
             w = d[w](random())
         print(s)
