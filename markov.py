@@ -37,7 +37,7 @@ def build_markov(lines):
             f = float(freq)/tot_f
             pairs.append((next, f + f0))
             f0 += f
-        print(word, pairs)
+        #print(word, pairs)
         def f(i):
             for (w, f) in pairs:
                 if f >= i:
@@ -47,11 +47,18 @@ def build_markov(lines):
         helper(word, d)
     return dc
 
-        
-
+def prepare(lines):
+    return list(map(lambda w: 'BEGIN ' + w + ' END', lines))
 
 if __name__ == '__main__':
-    tweets = read_file('tmp2')
+    tweets = read_file('tmp')
+    tweets = prepare(tweets)
     d = build_markov(tweets)
     for i in range(20):
-        print(d['a'](random()))
+        w = d['BEGIN'](random())
+        s = ''
+        while w != 'END':
+            s += w + ' '
+            w = d[w](random())
+        print(s)
+        print()

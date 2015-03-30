@@ -6,8 +6,8 @@ from re import compile
 #local file, containing keys
 from keys import *
 
-per_search_count    = "50"
-num_searches        = 1#6
+per_search_count    = "200"
+num_searches        = 5#6
 user                = 'SwiftOnSecurity'
 
 api = TwitterAPI(
@@ -45,8 +45,8 @@ def filtr(s):
     return filtr_re.match(s) == None
 
 def sanitize(s):
-    #TODO: comas, " 
-    s = s.strip()
+    #TODO: remove URLs
+    s = s.strip().replace(',', '').replace('"', '')
     if not s.endswith('.'):
         s = s + '. '
     s = s.replace('\n', '. ')
